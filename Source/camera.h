@@ -89,4 +89,9 @@ class camera{
         
         return fov;
     }
+
+    point getPoint() {
+    
+        return p;
+    }
 };

@@ -150,4 +150,94 @@ class point{
         this->z = dz + p.getZ();
         this->y = dy + p.getY();
     }
+
+
+    float getMagnitude() {
+    
+    
+        return sqrt(x * x + y * y + z*z);
+    
+    }
+    void normalize() {
+
+
+        float mag = getMagnitude();
+
+        if (mag != 0) {
+
+            x /= mag;
+            y /= mag;
+            z /= mag;
+
+
+        }
+
+
+    }
+    void subtr(point a, point b) {
+
+        point ret;
+
+        this->x = a.getX() - b.getX();
+        this->y = a.getY() - b.getY();
+        this->z = a.getZ() - b.getZ();
+
+    
+    }
+
+    //function overloads
+
+
+    point& operator=(point other) {
+        
+        this->x = other.getX();
+        this->y = other.getY();
+        this->z = other.getZ();
+
+        return *this;
+    
+    }
+
+    point& operator+(point other) {
+
+        point ret(this->x + other.getX(), this->y + other.getY(), this->z + other.getZ());
+
+        return ret;
+
+    }
+
+    point operator-(point other) {
+
+        point ret = point(this->x - other.getX(), this->y - other.getY(), this->z - other.getZ());
+
+        return ret;
+
+    }
+
+    float operator*(point other) {
+
+        float ret = this->x * other.getX() + this->y * other.getY() + this->z * other.getZ();
+
+        return ret;
+
+    }
+
+    point cross(point other) {
+        
+        point ret;
+
+        float a, b, c;
+
+        a = this->y * other.getZ() - this->z * other.getY();
+        b = this->z * other.getX() - this->x * other.getZ();
+        c = this->x * other.getY() - this->y * other.getX();
+    
+        ret = point(a, b, c);
+
+        return ret;
+    }
+     
+
+
 };
+

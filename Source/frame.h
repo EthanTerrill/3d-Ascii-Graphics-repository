@@ -15,12 +15,11 @@ class frame{
         this->width = width;
         this->height = height;
         
-        buffer = new char[(width + 1) * height - 1];
+        buffer = new char[ (width+1) * height - 4];
         
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
-                buffer[y * (width + 1) + x] = ' ';
-                
+                buffer[y * (width + 1) + x] = '8'; 
                 
             }
              buffer[y * (width + 1) + width] = '\n';
@@ -29,13 +28,15 @@ class frame{
     }
     
     void show(){
-        //std::cout<<"\033[" << 0 << ";" << 0 << "H";
+        std::cout<<"\033[" << 0 << ";" << 0 << "H";
         
            //printf("%s\n", buffer[0]);
            
 
         printf("\033[%d;%dH", (0), (0));
         printf("%s\n", buffer);
+
+        printf("\033[%d;%dH", (0), (0));
     }
     
     void invert(){
@@ -308,8 +309,12 @@ class frame{
     void drawPoly_3d(polygon p, camera C){
         
         for(int i = 0; i < p.getNum(); i++){
-            
-            drawLine_3d(p.getLine(i), C);
+            point normal = p.getNormal();
+            point vec = p.getPoint(0) - C.getPoint();
+            if (normal * vec < 0.0) {
+                drawLine_3d(p.getLine(i), C);
+            }
+
             
         }
          

@@ -11,65 +11,29 @@ class model{
     
     model(std::string fileName){
         
-        std::fstream f;
+        std::ifstream f;
         f.open(fileName);
         
-        char c;
+        char c = 0;
        point* myPoints = (point*)std::malloc(sizeof(point) * 3);
-        
+       //f >> c;
+       int line = 0;
         while(!f.eof()){
             
             f>>c;
+
             if(c == 'v' ){ 
                 
                 double bufferval[3]{ 0, 0, 0 };
                 for(int i = 0; i < 3; i++){
                     
+                    float myfloat;
+                    f>>myfloat;
                     
-                    f>>c;
+                    bufferval[i] = myfloat;
                     
-                    if(c == '-'){
-                    
-                        
-                        f>>c;
-                        
-                        while(c != '.'){
-                            
-                            bufferval[i] *= 10;
-                            bufferval[i] -= (c - 48); 
-                            
-                            f>>c;
-                        }
-                        for(int j = 1 ; j < 7; j++){
-                            
-                            f>>c;
-                            
-                            bufferval[i] -= double(c - 48) / (10 ^ j);
-                        }
-                        
-                        
-                    }
-                    else{
-                        
-                        while(c != '.'){
-                            
-                            bufferval[i] *= 10;
-                            bufferval[i] += (c - 48); 
-                            
-                            f>>c;
-                        }
-                        for(int j = 1 ; j < 7; j++){
-                            
-                            f>>c;
-                            
-                            bufferval[i] += double(c - 48) / (10 ^ j);
-                            
-                        }
-                        
-                    }
-                    bufferval[i] *= 10;
                 }
-                
+                line++;
                 points.push_back(point(bufferval[0], bufferval[1], bufferval[2]));
             }
             else if(c == 'f'){
@@ -77,29 +41,42 @@ class model{
                 
                 
                 for (int i = 0; i < 3; i++){
-                    f>>c;
+                    int myInt;
+                    f>> myInt;
+
+                    if(points.size()>myInt - 1){
                     myPoints[i] = point();
                     
-                    myPoints[i].setX(points[c - 49].getX());
+                    myPoints[i].setX(points[myInt - 1].getX());
                     
-                    myPoints[i].setY(points[c - 49].getY());
+                    myPoints[i].setY(points[myInt - 1].getY());
                     
-                    myPoints[i].setZ(points[c - 49].getZ());
-                    
+                    myPoints[i].setZ(points[myInt - 1].getZ());
+                    }
                     
                 }
                 
                 triangles.push_back(polygon(3, myPoints));
+                line++;
                 
-                
+            }
+            else if (c == '#') {
+
+
+
+                while (c != '\n') {
+                    f>> c;
+                }
+                line++;
             }
             else if(f.eof()){
                 exit;
             }
             else{
-                std::cout <<"\nERROR\n" << (int)c;
-                //while(1){}
+                std::cout <<"\nERROR\n charcter: (val)" << (int)c << " (Disp)" << c << " not understood at line " << line<<"\n";
+                while(1){}
             }
+
         }
         
     }
