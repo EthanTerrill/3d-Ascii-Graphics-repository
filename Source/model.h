@@ -80,6 +80,78 @@ class model{
         }
         
     }
+
+    model(std::string fileName, float scaleFactor) {
+
+        std::ifstream f;
+        f.open(fileName);
+
+        char c = 0;
+        point* myPoints = (point*)std::malloc(sizeof(point) * 3);
+        //f >> c;
+        int line = 0;
+        while (!f.eof()) {
+
+            f >> c;
+
+            if (c == 'v') {
+
+                double bufferval[3]{ 0, 0, 0 };
+                for (int i = 0; i < 3; i++) {
+
+                    float myfloat;
+                    f >> myfloat;
+
+                    bufferval[i] = myfloat * scaleFactor;
+
+                }
+                line++;
+                points.push_back(point(bufferval[0], bufferval[1], bufferval[2]));
+            }
+            else if (c == 'f') {
+
+
+
+                for (int i = 0; i < 3; i++) {
+                    int myInt;
+                    f >> myInt;
+
+                    if (points.size() > myInt - 1) {
+                        myPoints[i] = point();
+
+                        myPoints[i].setX(points[myInt - 1].getX());
+
+                        myPoints[i].setY(points[myInt - 1].getY());
+
+                        myPoints[i].setZ(points[myInt - 1].getZ());
+                    }
+
+                }
+
+                triangles.push_back(polygon(3, myPoints));
+                line++;
+
+            }
+            else if (c == '#') {
+
+
+
+                while (c != '\n') {
+                    f >> c;
+                }
+                line++;
+            }
+            else if (f.eof()) {
+                exit;
+            }
+            else {
+                std::cout << "\nERROR\n charcter: (val)" << (int)c << " (Disp)" << c << " not understood at line " << line << "\n";
+                while (1) {}
+            }
+
+        }
+
+    }
     
     int getFaceNum(){
         
