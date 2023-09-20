@@ -13,7 +13,9 @@ class line{
         
         vert = (A.getX() == B.getX());
         
-        slope = ( double(A.getY() - B.getY())/double(A.getX() - B.getX()) );
+        if (!vert) {
+            slope = (double(A.getY() - B.getY()) / double(A.getX() - B.getX()));
+        }
         
         slope = slope * (!vert);
         

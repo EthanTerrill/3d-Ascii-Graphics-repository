@@ -1,15 +1,36 @@
-class frame{
-    
-    private:
-    
+class frame {
+
+private:
+
     unsigned int width;
     unsigned int height;
-    
-    
+
+
     char* buffer;
+    bool* rBuffer;
+
+    std::vector<polygon> renderStack;
+
+    void drawLineFunc(float small, float big, float ty, float tx, float m, char c) {
+    
+        for (float x = small; x < big; x++) {
+
+            float h = ty + (m * (x - tx));
+
+            if (h < height && x < width && x > 0 && h > 0 && rBuffer[int(h) * (width + 1) + int(x)] == false) {
+
+
+
+                buffer[int(h) * (width + 1) + int(x)] = c;
+                rBuffer[int(h) * (width + 1) + int(x)] = true;
+            }
+        }
+    
+    }
     
     public: 
     
+
     frame(unsigned int width, unsigned int height){
         
         this->width = width;
@@ -23,6 +44,16 @@ class frame{
                 
             }
              buffer[y * (width + 1) + width] = '\n';
+        }
+
+        rBuffer = new bool[ (width+1) * height - 4];
+        
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+               rBuffer[y * (width + 1) + x] = false; 
+                
+            }
+            rBuffer[y * (width + 1) + width] = true;
         }
         
     }
@@ -63,13 +94,24 @@ class frame{
             }
             
         }
+        for (int y = 0; y < height; y++) {
+
+            for (int x = 0; x < width; x++) {
+
+                rBuffer[y * (width + 1) + x] = false;
+
+            }
+
+        }
         
     }
     
     void drawPoint(point A){
         
-        if(A.getY() < height && A.getX() < width)
-        buffer[int(A.getY() * (width + 1) + A.getX())] = A.getType();
+        if (A.getY() < height && A.getX() < width && rBuffer[int(A.getY() * (width + 1) + A.getX())] == false) {
+            buffer[int(A.getY() * (width + 1) + A.getX())] = A.getType();
+            rBuffer[int(A.getY() * (width + 1) + A.getX())] = true;
+        }
         
         
     }
@@ -124,160 +166,160 @@ class frame{
     
     void drawLine_3d(line L, camera cam){
         
-    
-        double zTranslatedA = L.getA().getZ() - cam.getZ();
+        
+
+
+        point2d A(L.getA(), cam.getPoint(), width, height);
+        point2d B(L.getB(), cam.getPoint(), width, height);
+
+        double zTranslatedA = (L.getA().getZ() - cam.getZ());
         double zTranslatedB = L.getB().getZ() - cam.getZ();
             
+        float rat = float(width) / float(height);
+            
+        if( zTranslatedA > 0 && zTranslatedB > 0 && A.drawable() && B.drawable()) {
             
             
-        if( zTranslatedA > 0 && zTranslatedB > 0 ) {
+             
+
+            int h = A.getY();
+            int x = A.getX();
             
             
-            //define integers for storing the translated
-            // x values of both points
-            int xTranslatedA;
-            int xTranslatedB;
-            
-            //translate according to the camera
-            xTranslatedA    =   L.getA().getX() -   cam.getX();
-            xTranslatedB    =   L.getB().getX() -   cam.getX();
-            
-            //divide by the trasnalted z value to make far away
-            //objects look smaller
-            xTranslatedA    =  double(xTranslatedA * 2) / double(sqrt(zTranslatedA)); 
-            xTranslatedB    =  double(xTranslatedB * 2) / double(sqrt(zTranslatedB));
-            
-            //add 1/2 the width to the location in order
-            //to make sure the point of oringin (0, 0) 
-            //is in the middle of the screeen
-            xTranslatedA    =   xTranslatedA + (0.5 * width);
-            xTranslatedB    =   xTranslatedB + (0.5 * width);
-            
-            //define integers for storing the translated
-            // x values of both points
-            double yTranslatedA;
-            double yTranslatedB;
-            
-            //translate according to the camera
-            yTranslatedA    =   L.getA().getY() -   cam.getY();
-            yTranslatedB    =   L.getB().getY() -   cam.getY();
-            
-            //divide by the trasnalted z value to make far away
-            //objects look smaller 
-            yTranslatedA    =  (yTranslatedA * 2) / double(sqrt(zTranslatedA)); 
-            yTranslatedB    =  (yTranslatedB * 2) / double(sqrt(zTranslatedB));
-            
-            //add 1/2 the height to the location in order
-            //to make sure the point of oringin (0, 0) 
-            //is in the middle of the screeen
-            yTranslatedA    +=   (0.5 * height);
-            yTranslatedB    +=   (0.5 * height);
                 
-            if(!(xTranslatedA == xTranslatedB)){
+            if(!(int(A.getX()) == int(B.getX())) ){
                 
-                double slope  = double(yTranslatedA - yTranslatedB)/ double(xTranslatedA - xTranslatedB);
+                double slope  = (A.getY() - B.getY()) /(A.getX() -B.getX());
                 
-                int small;
-                small = (xTranslatedA < xTranslatedB) * xTranslatedA;
-                small = (xTranslatedA > xTranslatedB) * xTranslatedB + small;
+                float small;
+                small = (A.getX() <  B.getX()) * A.getX();
+                small = (A.getX() >= B.getX()) * B.getX() + small;
                 
                 
-                int big;
-                big = (xTranslatedA > xTranslatedB) * xTranslatedA;
-                big = (xTranslatedA < xTranslatedB) * xTranslatedB + big;
+                float big;
+                big = (A.getX() > B.getX()) * A.getX();
+                big = (A.getX() <= B.getX()) * B.getX() + big;
+                 
+
                 
-                
-                
-                if(slope <= -1){
-                    
-                    for(int x = small; x < big; x++){
-                        
-                        if(int(yTranslatedA + (slope * (x - xTranslatedA))) < height && x < width){
-                            
-                            int h = yTranslatedA + (slope * (x - xTranslatedA));
-                            
-                            buffer[ h * (width + 1) + x] = '\\';
-                            
-                        }
-                    }   
+                if (slope <= -0.5) {
+
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '/');
                 }
                 else if(slope >= -0.5 && slope <= 0.5){
                     
-                    for(int x = small; x < big; x++){
-                        
-                        if(int(yTranslatedA + (slope * (x - xTranslatedA))) < height && x < width){
-                            
-                            int h = yTranslatedA + (slope * (x - xTranslatedA));
-                            
-                            buffer[ h * (width + 1) + x] = '-';
-                            
-                        }
-                    }   
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '-');
                     
                 }
-                 else if(slope >= 1){
+                 else if(slope >= 0.5){
                     
-                    for(int x = small; x < big; x++){
-                        
-                        if(int(yTranslatedA + (slope * (x - xTranslatedA))) < height && x < width){
-                            
-                            int h = yTranslatedA + (slope * (x - xTranslatedA));
-                            
-                            buffer[ h * (width + 1) + x] = '/';
-                            
-                        }
-                    }   
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '\\');
                     
                 }else{
-                    for(int x = small; x < big; x++){
-                        
-                        if(int(yTranslatedA + (slope * (x - xTranslatedA))) < height && x < width){
-                            
-                            int h = yTranslatedA + (slope * (x - xTranslatedA));
-                            
-                            //buffer[ h * (width + 1) + x] = '@';
-                            
-                        }
-                    }   
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '|');
                     
-                }
+                } 
             }
             else{
                 
                 
-                int small;
-                small   =   (yTranslatedA < yTranslatedB) * yTranslatedA;
-                small   =   (yTranslatedA > yTranslatedB) * yTranslatedB + small;
-                
-                
-                int big;
-                big = (yTranslatedA > yTranslatedB) * yTranslatedA;
-                big = (yTranslatedA < yTranslatedB) * yTranslatedB + big;
+                float small;
+                small = (A.getY() < B.getY()) * A.getY();
+                small = (A.getY() >= B.getY()) * B.getY() + small;
+
+
+                float big;
+                big = (A.getY() > B.getY()) * A.getY();
+                big = (A.getY() <= B.getY()) * B.getY() + big;
                 
                 
                 for(int Y = small; Y < big; Y++){
                     
-                    if(Y < height && xTranslatedA < width)
-                    buffer[int(Y) * (width + 1) + int(xTranslatedA)] = '|';
+                    if (Y < height && A.getX() < width && Y >= 0 && A.getX() > 0 && rBuffer[int(Y) * (width + 1) + int(A.getX())] == false) {
+                        buffer[int(Y) * (width + 1) + int(A.getX())] = '|';
+                        rBuffer[int(Y) * (width + 1) + int(A.getX())] = true;
+                    }
                     
                 }
                 
             }
+
             
         }
         
+    }
+
+    void drawLine_3d(line L, camera cam, char disp) {
+
+
+
+
+        point2d A(L.getA(), cam.getPoint(), width, height);
+        point2d B(L.getB(), cam.getPoint(), width, height);
+
+        double zTranslatedA = (L.getA().getZ() - cam.getZ());
+        double zTranslatedB = L.getB().getZ() - cam.getZ();
+
+        float rat = float(width) / float(height);
+
+        if (zTranslatedA > 0 && zTranslatedB > 0 && A.drawable() && B.drawable()) {
+
+
+
+
+            int h = A.getY();
+            int x = A.getX();
+
+
+
+            if (!(int(A.getX()) == int(B.getX()))) {
+
+                double slope = (A.getY() - B.getY()) / (A.getX() - B.getX());
+
+                float small;
+                small = (A.getX() < B.getX()) * A.getX();
+                small = (A.getX() >= B.getX()) * B.getX() + small;
+
+
+                float big;
+                big = (A.getX() > B.getX()) * A.getX();
+                big = (A.getX() <= B.getX()) * B.getX() + big;
+
+
+
+                 
+                drawLineFunc(small, big, A.getY(), A.getX(), slope, disp);
+            }
+            else {
+
+
+                float small;
+                small = (A.getY() < B.getY()) * A.getY();
+                small = (A.getY() >= B.getY()) * B.getY() + small;
+
+
+                float big;
+                big = (A.getY() > B.getY()) * A.getY();
+                big = (A.getY() <= B.getY()) * B.getY() + big;
+
+
+                for (int Y = small; Y < big; Y++) {
+
+                    if (Y < height && A.getX() < width && Y >= 0 && A.getX() > 0 && rBuffer[int(Y) * (width + 1) + int(A.getX())] == false) {
+                        buffer[int(Y) * (width + 1) + int(A.getX())] = disp;
+                        rBuffer[int(Y) * (width + 1) + int(A.getX())] = true;
+                    }
+
+                }
+
+            }
+
+
+        }
+
     }
     
-    void fillPoly_3d(polygon p, camera cam){
-        
-        point pointA = p.getPoint(0);
-        
-        for(int i = 0; i < p.getLine(1).getLength(); i++){
-            
-            
-            
-        }
-    }
+    
     
     void drawPoly(polygon p){
         
@@ -305,18 +347,320 @@ class frame{
             
         }
     */
+
+    //requires that a-b is the hypotenuse
+
+     
     
-    void drawPoly_3d(polygon p, camera C){
+    void fillPoly(polygon p, camera cam) {
+
+
+        point2d a(p.getLine(0).getA(), cam.getPoint(), width, height);
+        point2d b(p.getLine(1).getA(), cam.getPoint(), width, height);
+        point2d c(p.getLine(2).getA(), cam.getPoint(), width, height);
+
+        if(p.getLine(0).getA().getZ() > cam.getZ() && p.getLine(1).getA().getZ() > cam.getZ() && p.getLine(2).getA().getZ() > cam.getZ())
+            if (a.drawable() && b.drawable() && c.drawable()) {
+
+                line A(point(a.getX(), a.getY(), 0), point(b.getX(), b.getY(), 0));
+                line B(point(b.getX(), b.getY(), 0), point(c.getX(), c.getY(), 0));
+                line C(point(c.getX(), c.getY(), 0), point(a.getX(), a.getY(), 0));
+
+                float Al = A.getLength();
+                float Bl = B.getLength();
+                float Cl = B.getLength();
+
+
+
+                std::vector<point2d> longest;
+                longest.push_back(a);
+                longest.push_back(b);
+                longest.push_back(c);
+
+                std::sort(longest.begin(), longest.end(), sortByHeight);
+
+
+                float m1, m2;
+
+
+                float xs = longest[0].getX();
+                float ys = longest[0].getY();
+
+                float dx1 = xs - longest[1].getX();
+                float dx2 = xs - longest[2].getX();
+
+                float dy1 = ys - longest[1].getY();
+                float dy2 = ys - longest[2].getY();
+
+                if (dy1 != 0 && dy2 != 0) {
+
+                    if (longest[1].getX() < longest[2].getX())
+                    {
+
+                        m1 = (dx1) / (dy1);
+                        m2 = (dx2) / (dy2);
+
+                    }
+                    else
+                    {
+
+                        m2 = (dx1) / (dy1);
+                        m1 = (dx2) / (dy2);
+
+                    }
+                    for (float y = longest[0].getY(); y > longest[1].getY(); y--) {
+
+                        float dy = y - ys;
+                        float xi = (dy)*m1 + xs;
+                        float xf = (dy)*m2 + xs;
+
+
+                        for (int x = xi; x < xf; x++) {
+                            if (y < height && x < width && x > 0 && y > 0) {
+
+
+
+                                buffer[int(y) * (width + 1) + int(x)] = '@';
+
+                            }
+                        }
+
+                    
+                    }
+                    ys = longest[2].getY();
+                    xs = longest[2].getX();
+
+                    dx1 = xs - longest[1].getX();
+                    dx2 = xs - longest[0].getX();
+
+                    float dy1 = ys - longest[1].getY();
+                    float dy2 = ys - longest[0].getY();
+
+                    if (longest[1].getX() < longest[0].getX())
+                    {
+
+                        m1 = (dx1) / (dy1);
+                        m2 = (dx2) / (dy2);
+
+                    }
+                    else
+                    {
+
+                        m2 = (dx1) / (dy1);
+                        m1 = (dx2) / (dy2);
+
+                    }
+                    for (float y = longest[2].getY(); y < longest[1].getY(); y++) {
+
+                        float dy = y - ys;
+                        float xi = (dy)*m1 + xs;
+                        float xf = (dy)*m2 + xs;
+
+                        for (int x = xi; x < xf; x++) {
+                            if (y < height && x < width && x > 0 && y > 0) {
+
+
+
+                                buffer[int(y) * (width + 1) + int(x)] = '@';
+
+                            }
+                        }
+                    
+                    }
+
+
+                }
+
+
+            }
+            else {
+
+                // add code for verticals
         
+        
+            }
+
+        
+
+    
+    }
+
+    void fillPoly(polygon p, camera cam, char fill) {
+
+
+        point2d a(p.getLine(0).getA(), cam.getPoint(), width, height);
+        point2d b(p.getLine(1).getA(), cam.getPoint(), width, height);
+        point2d c(p.getLine(2).getA(), cam.getPoint(), width, height);
+
+        if (p.getLine(0).getA().getZ() > cam.getZ() && p.getLine(1).getA().getZ() > cam.getZ() && p.getLine(2).getA().getZ() > cam.getZ())
+            if (a.drawable() && b.drawable() && c.drawable()) {
+
+                line A(point(a.getX(), a.getY(), 0), point(b.getX(), b.getY(), 0));
+                line B(point(b.getX(), b.getY(), 0), point(c.getX(), c.getY(), 0));
+                line C(point(c.getX(), c.getY(), 0), point(a.getX(), a.getY(), 0));
+
+                float Al = A.getLength();
+                float Bl = B.getLength();
+                float Cl = B.getLength();
+
+
+
+                std::vector<point2d> longest;
+                longest.push_back(a);
+                longest.push_back(b);
+                longest.push_back(c);
+
+                std::sort(longest.begin(), longest.end(), sortByHeight);
+
+
+                float m1, m2;
+
+
+                float xs = longest[0].getX();
+                float ys = longest[0].getY();
+
+                float dx1 = xs - longest[1].getX();
+                float dx2 = xs - longest[2].getX();
+
+                float dy1 = ys - longest[1].getY();
+                float dy2 = ys - longest[2].getY();
+
+                if (dy1 != 0 && dy2 != 0) {
+
+                    if (longest[1].getX() < longest[2].getX())
+                    {
+
+                        m1 = (dx1) / (dy1);
+                        m2 = (dx2) / (dy2);
+
+                    }
+                    else
+                    {
+
+                        m2 = (dx1) / (dy1);
+                        m1 = (dx2) / (dy2);
+
+                    }
+                    for (float y = longest[0].getY(); y > longest[1].getY(); y--) {
+
+                        float dy = y - ys;
+                        float xi = (dy)*m1 + xs;
+                        float xf = (dy)*m2 + xs;
+
+
+                        for (float x = xi; x < xf; x++) {
+                            if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
+
+
+
+                                buffer[int(y) * (width + 1) + int(x)] = fill;
+                                rBuffer[int(y) * (width + 1) + int(x)] = true;
+
+                            }
+                        }
+
+
+                    }
+                    ys = longest[2].getY();
+                    xs = longest[2].getX();
+
+                    dx1 = xs - longest[1].getX();
+                    dx2 = xs - longest[0].getX();
+
+                    float dy1 = ys - longest[1].getY();
+                    float dy2 = ys - longest[0].getY();
+
+                    if (longest[1].getX() < longest[0].getX())
+                    {
+
+                        m1 = (dx1) / (dy1);
+                        m2 = (dx2) / (dy2);
+
+                    }
+                    else
+                    {
+
+                        m2 = (dx1) / (dy1);
+                        m1 = (dx2) / (dy2);
+
+                    }
+                    for (float y = longest[2].getY(); y < longest[1].getY(); y++) {
+
+                        float dy = y - ys;
+                        float xi = (dy)*m1 + xs;
+                        float xf = (dy)*m2 + xs;
+
+                        for (float x = xi; x < xf; x++) {
+                            if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
+
+
+
+                                buffer[int(y) * (width + 1) + int(x)] = fill;
+                                rBuffer[int(y) * (width + 1) + int(x)] = true;
+
+                            }
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+            else {
+
+                // add code for verticals
+
+
+            }
+
+
+
+
+    }
+    
+    void drawPoly_3d(polygon p, camera C) {
+
+        point a(0, 1, -1);
+        point normal = p.getNormal();
+        float light = normal * a;
+
+        char disp = ' ';
+        if (light > 0.99) {
+            disp = '@';
+        }
+        else if(light > 0.9) {
+        disp = '#';
+        }
+        else if (light > 0.5) {
+            disp = '8';
+        }
+        else if (light > 0.3) {
+            disp = '*';
+        }
+        else if (light > 0.1) {
+            disp = '-';
+        }
+        else {
+
+            disp = '.';
+
+        }
+       
         for(int i = 0; i < p.getNum(); i++){
-            point normal = p.getNormal();
+            
             point vec = p.getPoint(0) - C.getPoint();
             if (normal * vec < 0.0) {
+
                 drawLine_3d(p.getLine(i), C);
+                fillPoly(p, C, ' ');
+                
             }
 
             
         }
+
          
         
     }
@@ -328,6 +672,26 @@ class frame{
         }
         
     }
+
+    void addModelToRenderStack(model m) {
     
+        for (int i = 0; i < m.getFaceNum(); i++) {
+            renderStack.push_back(m.getFace(i));
+        }
+    }
+    void drawRenderStack(camera C) {
+    
+        refCam = C.getPoint();
+        std::sort(renderStack.begin(), renderStack.end(), sortByZaxis);
+        for (int i = 0; i < renderStack.size(); i++) {
+            
+            drawPoly_3d(renderStack[i], C);
+
+        }
+
+
+    }
+
+
     
 };
