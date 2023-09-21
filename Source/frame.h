@@ -70,19 +70,7 @@ private:
         printf("\033[%d;%dH", (0), (0));
     }
     
-    void invert(){
-        
-        for(int y = 0; y < height; y++){
-            
-            for(int x = 0; x < width; x++){
-                
-                buffer[y * (width + 1) + x] = (buffer[y * (width + 1) + x] == '*') * ('t') + (buffer[y * (width + 1) + x] != '*') * ('*');
-                
-            }
-            
-        }
-        
-    }
+  
     void clear(){
 
         for(int y = 0; y < height; y++){
@@ -262,6 +250,7 @@ private:
 
         float rat = float(width) / float(height);
 
+
         if (zTranslatedA > 0 && zTranslatedB > 0 && A.drawable() && B.drawable()) {
 
 
@@ -352,7 +341,7 @@ private:
 
      
     
-    void fillPoly(polygon p, camera cam) {
+   /* void fillPoly(polygon p, camera cam) {
 
 
         point2d a(p.getLine(0).getA(), cam.getPoint(), width, height);
@@ -483,7 +472,8 @@ private:
         
 
     
-    }
+    }*/
+    
 
     void fillPoly(polygon p, camera cam, char fill) {
 
@@ -492,84 +482,84 @@ private:
         point2d b(p.getLine(1).getA(), cam.getPoint(), width, height);
         point2d c(p.getLine(2).getA(), cam.getPoint(), width, height);
 
-        if (p.getLine(0).getA().getZ() > cam.getZ() && p.getLine(1).getA().getZ() > cam.getZ() && p.getLine(2).getA().getZ() > cam.getZ())
-            if (a.drawable() && b.drawable() && c.drawable()) {
+        if (
+            a.drawable() &&
+            b.drawable() &&
+            c.drawable()
+            
 
-                line A(point(a.getX(), a.getY(), 0), point(b.getX(), b.getY(), 0));
-                line B(point(b.getX(), b.getY(), 0), point(c.getX(), c.getY(), 0));
-                line C(point(c.getX(), c.getY(), 0), point(a.getX(), a.getY(), 0));
+            )
+        {
 
-                float Al = A.getLength();
-                float Bl = B.getLength();
-                float Cl = B.getLength();
+            std::vector<point2d> longest;
+            longest.push_back(a);
+            longest.push_back(b);
+            longest.push_back(c);
 
-
-
-                std::vector<point2d> longest;
-                longest.push_back(a);
-                longest.push_back(b);
-                longest.push_back(c);
-
-                std::sort(longest.begin(), longest.end(), sortByHeight);
+            std::sort(longest.begin(), longest.end(), sortByHeight);
 
 
-                float m1, m2;
+            float m1, m2;
 
 
-                float xs = longest[0].getX();
-                float ys = longest[0].getY();
+            float xs = longest[0].getX();
+            float ys = longest[0].getY();
 
-                float dx1 = xs - longest[1].getX();
-                float dx2 = xs - longest[2].getX();
+            float dx1 = -xs + longest[1].getX();
+            float dx2 = -xs + longest[2].getX();
 
-                float dy1 = ys - longest[1].getY();
-                float dy2 = ys - longest[2].getY();
-
-                if (dy1 != 0 && dy2 != 0) {
-
-                    if (longest[1].getX() < longest[2].getX())
-                    {
-
-                        m1 = (dx1) / (dy1);
-                        m2 = (dx2) / (dy2);
-
-                    }
-                    else
-                    {
-
-                        m2 = (dx1) / (dy1);
-                        m1 = (dx2) / (dy2);
-
-                    }
-                    for (float y = longest[0].getY(); y > longest[1].getY(); y--) {
-
-                        float dy = y - ys;
-                        float xi = (dy)*m1 + xs;
-                        float xf = (dy)*m2 + xs;
+            float dy1 = -ys + longest[1].getY();
+            float dy2 = -ys + longest[2].getY();
 
 
-                        for (float x = xi; x < xf; x++) {
-                            if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
+            if (int(dy1) != 0 && int(dy2) != 0) {
+
+                if (longest[1].getX() < longest[2].getX())
+                {
+
+                    m1 = (dx1) / (dy1);
+                    m2 = (dx2) / (dy2);
+
+                }
+                else
+                {
+
+                    m2 = (dx1) / (dy1);
+                    m1 = (dx2) / (dy2);
+
+
+                }
+                float dy, xi, xf;
+                for (float y = ys; y >= longest[1].getY(); y--) {
+
+                    dy = y - ys;
+                    xi = (dy)*m1 + xs;
+                    xf = (dy)*m2 + xs;
+
+
+                    for (int x = xi; x < xf; x++) {
+                        if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
 
 
-                                buffer[int(y) * (width + 1) + int(x)] = fill;
-                                rBuffer[int(y) * (width + 1) + int(x)] = true;
+                            buffer[int(y) * (width + 1) + int(x)] = fill;
+                            rBuffer[int(y) * (width + 1) + int(x)] = true;
 
-                            }
                         }
-
-
                     }
-                    ys = longest[2].getY();
-                    xs = longest[2].getX();
 
-                    dx1 = xs - longest[1].getX();
-                    dx2 = xs - longest[0].getX();
 
-                    float dy1 = ys - longest[1].getY();
-                    float dy2 = ys - longest[0].getY();
+                }
+            }
+                ys = longest[2].getY();
+                xs = longest[2].getX();
 
+                dx1 = -xs + longest[1].getX();
+                dx2 = -xs + longest[0].getX();
+
+                dy1 = -ys + longest[1].getY();
+                dy2 = -ys + longest[0].getY();
+                if (int(dy1) != 0 && int(dy2) != 0) {
                     if (longest[1].getX() < longest[0].getX())
                     {
 
@@ -584,13 +574,14 @@ private:
                         m1 = (dx2) / (dy2);
 
                     }
-                    for (float y = longest[2].getY(); y < longest[1].getY(); y++) {
+                    float dy, xi, xf;
+                    for (float y = ys; y <= longest[1].getY(); y++) {
 
-                        float dy = y - ys;
-                        float xi = (dy)*m1 + xs;
-                        float xf = (dy)*m2 + xs;
+                        dy = y - ys;
+                        xi = (dy)*m1 + xs;
+                        xf = (dy)*m2 + xs;
 
-                        for (float x = xi; x < xf; x++) {
+                        for (int x = xi; x < xf; x++) {
                             if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
 
@@ -602,20 +593,16 @@ private:
                         }
 
                     }
-
-
                 }
+                longest.pop_back();
+                longest.pop_back();
+                longest.pop_back();
 
 
-            }
-            else {
 
-                // add code for verticals
+            
 
-
-            }
-
-
+        }
 
 
     }
@@ -653,8 +640,8 @@ private:
             point vec = p.getPoint(0) - C.getPoint();
             if (normal * vec < 0.0) {
 
-                drawLine_3d(p.getLine(i), C);
-                fillPoly(p, C, ' ');
+                //drawLine_3d(p.getLine(i), C);
+                fillPoly(p, C, disp);
                 
             }
 
