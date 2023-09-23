@@ -1,1 +1,16 @@
 
+- Fix polygon Rendering
+  -Test 
+  -compare to math
+- add support for lighting
+  - look in to ray tracing
+  - look into classic lighting algorithms
+  - choose and implemeent algorithms
+- add collision detection
+- add entity class
+- add scripting
+- implement RGB buffers
+  - decide on lighti9ng method for RGB buffers
+-implement GUI for map making
+-Implement sound files
+-add toolkit
