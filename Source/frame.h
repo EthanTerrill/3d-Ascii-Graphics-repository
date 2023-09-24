@@ -513,30 +513,27 @@ private:
 
 
             if (int(dy1) != 0 && int(dy2) != 0) {
-
-                if (longest[1].getX() < longest[2].getX())
-                {
-
-                    m1 = (dx1) / (dy1);
-                    m2 = (dx2) / (dy2);
-
-                }
-                else
-                {
-
-                    m2 = (dx1) / (dy1);
-                    m1 = (dx2) / (dy2);
-
-
-                }
+                
+                m1 = (dx1) / (dy1);
+                m2 = (dx2) / (dy2); 
                 float dy, xi, xf;
+
+
                 for (float y = ys; y >= longest[1].getY(); y--) {
 
                     dy = y - ys;
                     xi = (dy)*m1 + xs;
                     xf = (dy)*m2 + xs;
+                    if (y < height && xi < width && xi > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(xi)] == false) {
+                        buffer[int(y) * (width + 1) + int(xi)] = '\\';
+                        rBuffer[int(y) * (width + 1) + int(xi)] = true;
+                    }
 
-
+                    if (xi > xf) {
+                        float t = xi;
+                        xi = xf;
+                        xf = t;
+                    }
                     for (int x = xi; x < xf; x++) {
                         if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
@@ -551,6 +548,7 @@ private:
 
                 }
             }
+
                 ys = longest[2].getY();
                 xs = longest[2].getX();
 
@@ -560,27 +558,28 @@ private:
                 dy1 = -ys + longest[1].getY();
                 dy2 = -ys + longest[0].getY();
                 if (int(dy1) != 0 && int(dy2) != 0) {
-                    if (longest[1].getX() < longest[0].getX())
-                    {
 
-                        m1 = (dx1) / (dy1);
-                        m2 = (dx2) / (dy2);
 
-                    }
-                    else
-                    {
-
-                        m2 = (dx1) / (dy1);
-                        m1 = (dx2) / (dy2);
-
-                    }
+                    m1 = (dx1) / (dy1);
+                    m2 = (dx2) / (dy2);
+                         
                     float dy, xi, xf;
                     for (float y = ys; y <= longest[1].getY(); y++) {
 
                         dy = y - ys;
                         xi = (dy)*m1 + xs;
                         xf = (dy)*m2 + xs;
+                        if (y < height && xf < width && xf > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(xf)] == false) {
+                            buffer[int(y) * (width + 1) + int(xf)] = '/';
+                            rBuffer[int(y) * (width + 1) + int(xf)] = true;
+                        }
 
+
+                        if (xi > xf) {
+                            float t = xi;
+                            xi = xf;
+                            xf = t;
+                        }
                         for (int x = xi; x < xf; x++) {
                             if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
