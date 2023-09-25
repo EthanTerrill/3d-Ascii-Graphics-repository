@@ -1,7 +1,6 @@
 
-- Fix polygon Rendering
-  -Test 
-  -compare to math
+- Look into frame bug
+  - fix edge rendering
 - add support for lighting
   - look in to ray tracing
   - look into classic lighting algorithms
