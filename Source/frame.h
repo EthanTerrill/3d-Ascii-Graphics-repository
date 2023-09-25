@@ -469,65 +469,21 @@ private:
         
             }
 
-        
+        // also 
 
-    
-    }*/
-    
-
-    void fillPoly(polygon p, camera cam, char fill) {
-
-
-        point2d a(p.getLine(0).getA(), cam.getPoint(), width, height);
-        point2d b(p.getLine(1).getA(), cam.getPoint(), width, height);
-        point2d c(p.getLine(2).getA(), cam.getPoint(), width, height);
-
-        if (
-            a.drawable() &&
-            b.drawable() &&
-            c.drawable()
-            
-
-            )
-        {
-
-            std::vector<point2d> longest;
-            longest.push_back(a);
-            longest.push_back(b);
-            longest.push_back(c);
-
-            std::sort(longest.begin(), longest.end(), sortByHeight);
-
-
-            float m1, m2;
-
-
-            float xs = longest[0].getX();
-            float ys = longest[0].getY();
-
-            float dx1 = -xs + longest[1].getX();
-            float dx2 = -xs + longest[2].getX();
-
-            float dy1 = -ys + longest[1].getY();
-            float dy2 = -ys + longest[2].getY();
-
-
+        /*
             if (int(dy1) != 0 && int(dy2) != 0) {
-                
+
                 m1 = (dx1) / (dy1);
-                m2 = (dx2) / (dy2); 
+                m2 = (dx2) / (dy2);
                 float dy, xi, xf;
 
 
-                for (float y = ys; y >= longest[1].getY(); y--) {
+                for (float y = ys; y > longest[1].getY() ; y--) {
 
                     dy = y - ys;
                     xi = (dy)*m1 + xs;
                     xf = (dy)*m2 + xs;
-                    if (y < height && xi < width && xi > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(xi)] == false) {
-                        buffer[int(y) * (width + 1) + int(xi)] = '\\';
-                        rBuffer[int(y) * (width + 1) + int(xi)] = true;
-                    }
 
                     if (xi > xf) {
                         float t = xi;
@@ -549,53 +505,146 @@ private:
                 }
             }
 
-                ys = longest[2].getY();
-                xs = longest[2].getX();
+            ys = longest[2].getY();
+            xs = longest[2].getX();
 
-                dx1 = -xs + longest[1].getX();
-                dx2 = -xs + longest[0].getX();
+            dx1 = -xs + longest[1].getX();
+            dx2 = -xs + longest[0].getX();
 
-                dy1 = -ys + longest[1].getY();
-                dy2 = -ys + longest[0].getY();
-                if (int(dy1) != 0 && int(dy2) != 0) {
+            dy1 = -ys + longest[1].getY();
+            dy2 = -ys + longest[0].getY();
+            if (int(dy1) != 0 && int(dy2) != 0) {
 
 
-                    m1 = (dx1) / (dy1);
-                    m2 = (dx2) / (dy2);
-                         
-                    float dy, xi, xf;
-                    for (float y = ys; y <= longest[1].getY(); y++) {
+                m1 = (dx1) / (dy1);
+                m2 = (dx2) / (dy2);
 
-                        dy = y - ys;
-                        xi = (dy)*m1 + xs;
-                        xf = (dy)*m2 + xs;
-                        if (y < height && xf < width && xf > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(xf)] == false) {
-                            buffer[int(y) * (width + 1) + int(xf)] = '/';
-                            rBuffer[int(y) * (width + 1) + int(xf)] = true;
+                float dy;
+                float xi, xf;
+                for (float y = ys; y < longest[1].getY(); y++) {
+
+                    dy = y - ys;
+                    xi = (dy)*m1 + xs;
+                    xf = (dy)*m2 + xs;
+
+                    if (xi > xf) {
+                        float t = xi;
+                        xi = xf;
+                        xf = t;
+                    }
+                    for (int x = xi; x < xf; x++) {
+                        if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
+
+
+
+                            buffer[int(y) * (width + 1) + int(x)] = fill;
+                            rBuffer[int(y) * (width + 1) + int(x)] = true;
+
                         }
+                    }
+
+                }
+            }
+
+    
+    }*/
+    
+    void drawHalfTriangle(point2d a, point2d b, point2d c, char fill) {
 
 
-                        if (xi > xf) {
-                            float t = xi;
-                            xi = xf;
-                            xf = t;
-                        }
-                        for (int x = xi; x < xf; x++) {
-                            if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
+        float m1, m2;
+
+
+        float xs = a.getX();
+        float ys = a.getY();
+
+        float dx1 = -xs + b.getX();
+        float dx2 = -xs + c.getX();
+
+        float dy1 = -ys + b.getY();
+        float dy2 = -ys + c.getY();
+
+        char y_s, ye;
+        if (ys > b.getY()) {
+            y_s = ys;
+            ye = b.getY();
+        }
+        else {
+            ye = ys;
+            y_s = b.getY();
+        }
+
+        if (int(dy1) != 0 && int(dy2) != 0) {
+
+
+            float m1, m2;
+            m1 = (dx1) / (dy1);
+            m2 = (dx2) / (dy2);
+            float dy, xi, xf;
+
+
+            for (float y = y_s; y > ye; y--) {
+
+                dy = y - ys;
+                xi = (dy)*m1 + xs;
+                xf = (dy)*m2 + xs;
+
+                if (xi > xf) {
+                    float t = xi;
+                    xi = xf;
+                    xf = t;
+                }
+                for (int x = xi; x < xf; x++) {
+                    if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
 
 
-                                buffer[int(y) * (width + 1) + int(x)] = fill;
-                                rBuffer[int(y) * (width + 1) + int(x)] = true;
-
-                            }
-                        }
+                        buffer[int(y) * (width + 1) + int(x)] = fill;
+                        rBuffer[int(y) * (width + 1) + int(x)] = true;
 
                     }
                 }
-                longest.pop_back();
-                longest.pop_back();
-                longest.pop_back();
+
+
+            }
+        }
+
+    }
+    void fillPoly(polygon p, camera cam, char fill) {
+
+        //convert 
+        point2d a(p.getLine(0).getA(), cam.getPoint(), width, height);
+        point2d b(p.getLine(1).getA(), cam.getPoint(), width, height);
+        point2d c(p.getLine(2).getA(), cam.getPoint(), width, height);
+
+        if (
+            a.drawable() &&
+            b.drawable() &&
+            c.drawable()
+            
+
+            )
+        {
+            //sort points by height on screen
+            std::vector<point2d> longest;
+            longest.push_back(a);
+            longest.push_back(b);
+            longest.push_back(c);
+            std::sort(longest.begin(), longest.end(), sortByHeight);
+
+
+            //draw top half of triangle
+            drawHalfTriangle(longest[2], longest[1], longest[0], fill);
+
+            //draw bottom half of triangle
+            drawHalfTriangle(longest[0], longest[1], longest[2], fill);
+            
+
+
+            //clear memory
+            longest.pop_back();
+            longest.pop_back();
+            longest.pop_back();
 
 
 
