@@ -46,7 +46,7 @@ public:
 
             //create ratio value
 
-            float ratio = float(bufferWidth) / float(bufferHeight);
+            float ratio = 1;// float(bufferWidth) / float(bufferHeight);
 
             x = pT.getX() * ratio / z;
             y = pT.getY() / z;

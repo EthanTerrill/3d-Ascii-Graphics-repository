@@ -36,6 +36,8 @@
     }
     
     #include "model.h"
+    
 
     #include "frame.h" 
+    #include "colorFrame.h" 
 #endif

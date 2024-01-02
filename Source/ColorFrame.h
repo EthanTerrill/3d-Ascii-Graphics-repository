@@ -1,4 +1,4 @@
-class frame {
+class Colorframe {
 
 private:
 
@@ -6,81 +6,168 @@ private:
     unsigned int height;
 
 
-    char* buffer;
-    bool* rBuffer;
+    char* buffer = NULL;
+
+    //This is a buffer to check if a color/pixel has alreadu
+    bool* rBuffer = NULL;
 
     std::vector<polygon> renderStack;
 
     void drawLineFunc(float small, float big, float ty, float tx, float m, char c) {
-    
+
         for (float x = small; x < big; x++) {
 
             float h = ty + (m * (x - tx));
 
             if (h < height && x < width && x > 0 && h > 0 && rBuffer[int(h) * (width + 1) + int(x)] == false) {
 
-
-
-                buffer[int(h) * (width + 1) + int(x)] = c;
                 rBuffer[int(h) * (width + 1) + int(x)] = true;
+
             }
         }
-    
+
     }
-    
-    public: 
+
+public:
     
 
-    frame(unsigned int width, unsigned int height){
+
+    Colorframe(unsigned int width, unsigned int height) {
         
         this->width = width;
         this->height = height;
-        
-        buffer = new char[ (width+1) * height];
-        
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-                buffer[y * (width + 1) + x] = '8'; 
+        std::cout << "1";
+
+
+        ////////////////////////////////////////////////
+        // Initialize buffer
+        ///////////////////////////////////////////
+
+
+
+        buffer = new char[(width * 12 + 1) * height];
+        for (int y = 0; y < (width * 12 + 1) * height; y++) {
+               
+
                 
+                buffer[y] = ' ';
+
+
+        }
+        
+        std::cout << "3";
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+
+                char color[12] = "\033[38;5;001m";
+
+                for (int i = 0; i < 11; i++) {
+
+                    buffer[y * (width * 12 + 1) + x * 12 + i] =  color[i];
+
+                    char col = (rand() % 10) + 48;
+                    
+                    setPixelColor(x, y, '0', '0', col);
+                }
+
+                buffer[y * (width * 12 + 1) + x * 12 + 11] = '2';
+
+              
             }
-             buffer[y * (width + 1) + width] = '\n';
+            buffer[y * (width * 12 + 1)+ width * 12] = '\n';
         }
 
-        rBuffer = new bool[ (width+1) * height];
-        
-        for(int y = 0; y < height; y++){
-            for(int x = 0; x < width; x++){
-               rBuffer[y * (width + 1) + x] = false; 
-                
+
+        std::cout << "4";
+
+
+
+
+
+
+        ////////////////////////////////////////////////
+        // Initialize readBuffer
+        ///////////////////////////////////////////
+
+
+        rBuffer = new bool[(width + 1) * height];
+
+        std::cout << "6";
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                rBuffer[y * (width + 1) + x] = false;
+
             }
             rBuffer[y * (width + 1) + width] = true;
         }
-        
+
     }
-    
-    void show(){
-        std::cout<<"\033[" << 0 << ";" << 0 << "H";
+
+
+
+
+
+
+
+    void setBufferColorsRandom() {
         
-           //printf("%s\n", buffer[0]);
-           
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+
+
+                for (int i = 0; i < 11; i++) {
+
+
+                    char col3 = (rand() %2) + 48;
+                    setPixelColor(x, y, '0','0', col3);
+                }
+                 
+
+
+            }
+        }
+
+    }
+
+
+    inline void setPixel(int x, int y, char c) {
+
+        buffer[y * (width * 12 + 1) + x * 12 + 11] = c;
+    }
+    inline void setPixelColor(int x, int y, char a, char b, char c) {
+
+        buffer[y * (width * 12 + 1) + x * 12 + 11 - 4] = a;
+        buffer[y * (width * 12 + 1) + x * 12 + 11 - 3] = b;
+        buffer[y * (width * 12 + 1) + x * 12 + 11 - 2] = c;
+    }
+
+    void show() {
+        //std::cout << "\033[" << 0 << ";" << 0 << "H";
+
+        //printf("%s\n", buffer[0]);
+        //char color[12] = "\033[38;5;003m";
+        //printf("%s", color);
 
         printf("\033[%d;%dH", (0), (0));
         printf("%s\n", buffer);
 
         printf("\033[%d;%dH", (0), (0));
     }
-    
-  
-    void clear(){
 
-        for(int y = 0; y < height; y++){
-            
-            for(int x = 0; x < width; x++){
-                
-                buffer[y * (width + 1) + x] = ' ';
-                
+
+
+    void clear() {
+
+        for (int y = 0; y < height; y++) {
+
+            for (int x = 0; x < width; x++) {
+
+                setPixel(x, y, ' ');
+               // buffer[y * (width + 1) + x * 13] = ' ';
+
             }
-            
+
         }
         for (int y = 0; y < height; y++) {
 
@@ -91,70 +178,70 @@ private:
             }
 
         }
-        
+
     }
-    
-    void drawPoint(point A){
-        
+
+    void drawPoint(point A) {
+
         if (A.getY() < height && A.getX() < width && rBuffer[int(A.getY() * (width + 1) + A.getX())] == false) {
-            buffer[int(A.getY() * (width + 1) + A.getX())] = A.getType();
+           // buffer[int(A.getY() * (width + 1) + A.getX())] = A.getType();
             rBuffer[int(A.getY() * (width + 1) + A.getX())] = true;
         }
-        
-        
+
+
     }
-    
-    void drawLine(line L){
-        
-        
-            
-        if(!L.isVertical()){
+
+    void drawLine(line L) {
+
+
+
+        if (!L.isVertical()) {
             int small;
             small = (L.getA().getX() < L.getB().getX()) * L.getA().getX();
             small = (L.getA().getX() > L.getB().getX()) * L.getB().getX() + small;
-            
-            
+
+
             int big;
             big = (L.getA().getX() > L.getB().getX()) * L.getA().getX();
             big = (L.getA().getX() < L.getB().getX()) * L.getB().getX() + big;
-            
-            
-            for(int x = small + (0.5 * width); x < big + (0.5 * width); x++){
-                
-                if(L.getA().getY() < height && x < width)
-                buffer[int((L.getA().getY() + (0.5 * height)) + int(L.getSlope() * (x - L.getA().getX()))) * (width + 1) + x] = '#';
-                
+
+
+            for (int x = small + (0.5 * width); x < big + (0.5 * width); x++) {
+
+                if (L.getA().getY() < height && x < width)
+                    buffer[int((L.getA().getY() + (0.5 * height)) + int(L.getSlope() * (x - L.getA().getX()))) * (width + 1) + x] = '#';
+
             }
-            
+
         }
-        else{
-            
-            
+        else {
+
+
             int small;
             small = (L.getA().getY() < L.getB().getY()) * L.getA().getY();
             small = (L.getA().getY() > L.getB().getY()) * L.getB().getY() + small;
-            
-            
+
+
             int big;
             big = (L.getA().getY() > L.getB().getY()) * L.getA().getY();
             big = (L.getA().getY() < L.getB().getY()) * L.getB().getY() + big;
-            
-            for(int Y = small; Y < big; Y++){
-                
-                if(Y < height && L.getA().getX() < width)
-                buffer[int(Y * (width + 1) + L.getA().getX())] = '#';
-                
+
+            for (int Y = small; Y < big; Y++) {
+
+                if (Y < height && L.getA().getX() < width)
+                    buffer[int(Y * (width + 1) + L.getA().getX())] = '#';
+
             }
-            
+
         }
-        
-        
+
+
     }
-    
-    
-    void drawLine_3d(line L, camera cam){
-        
-        
+
+
+    void drawLine_3d(line L, camera cam) {
+
+
 
 
         point2d A(L.getA(), cam.getPoint(), width, height);
@@ -162,55 +249,56 @@ private:
 
         double zTranslatedA = (L.getA().getZ() - cam.getZ());
         double zTranslatedB = L.getB().getZ() - cam.getZ();
-            
+
         float rat = float(width) / float(height);
-            
-        if( zTranslatedA > 0 && zTranslatedB > 0 && A.drawable() && B.drawable()) {
-            
-            
-             
+
+        if (zTranslatedA > 0 && zTranslatedB > 0 && A.drawable() && B.drawable()) {
+
+
+
 
             int h = A.getY();
             int x = A.getX();
-            
-            
-                
-            if(!(int(A.getX()) == int(B.getX())) ){
-                
-                double slope  = (A.getY() - B.getY()) /(A.getX() -B.getX());
-                
+
+
+
+            if (!(int(A.getX()) == int(B.getX()))) {
+
+                double slope = (A.getY() - B.getY()) / (A.getX() - B.getX());
+
                 float small;
-                small = (A.getX() <  B.getX()) * A.getX();
+                small = (A.getX() < B.getX()) * A.getX();
                 small = (A.getX() >= B.getX()) * B.getX() + small;
-                
-                
+
+
                 float big;
                 big = (A.getX() > B.getX()) * A.getX();
                 big = (A.getX() <= B.getX()) * B.getX() + big;
-                 
 
-                
+
+
                 if (slope <= -0.5) {
 
                     drawLineFunc(small, big, A.getY(), A.getX(), slope, '/');
                 }
-                else if(slope >= -0.5 && slope <= 0.5){
-                    
+                else if (slope >= -0.5 && slope <= 0.5) {
+
                     drawLineFunc(small, big, A.getY(), A.getX(), slope, '-');
-                    
+
                 }
-                 else if(slope >= 0.5){
-                    
+                else if (slope >= 0.5) {
+
                     drawLineFunc(small, big, A.getY(), A.getX(), slope, '\\');
-                    
-                }else{
+
+                }
+                else {
                     drawLineFunc(small, big, A.getY(), A.getX(), slope, '|');
-                    
-                } 
+
+                }
             }
-            else{
-                
-                
+            else {
+
+
                 float small;
                 small = (A.getY() < B.getY()) * A.getY();
                 small = (A.getY() >= B.getY()) * B.getY() + small;
@@ -219,22 +307,22 @@ private:
                 float big;
                 big = (A.getY() > B.getY()) * A.getY();
                 big = (A.getY() <= B.getY()) * B.getY() + big;
-                
-                
-                for(int Y = small; Y < big; Y++){
-                    
+
+
+                for (int Y = small; Y < big; Y++) {
+
                     if (Y < height && A.getX() < width && Y >= 0 && A.getX() > 0 && rBuffer[int(Y) * (width + 1) + int(A.getX())] == false) {
-                        buffer[int(Y) * (width + 1) + int(A.getX())] = '|';
+                        //buffer[int(Y) * (width + 1) + int(A.getX()) * 13] = '|';
                         rBuffer[int(Y) * (width + 1) + int(A.getX())] = true;
                     }
-                    
+
                 }
-                
+
             }
 
-            
+
         }
-        
+
     }
 
     void drawLine_3d(line L, camera cam, char disp) {
@@ -276,7 +364,7 @@ private:
 
 
 
-                 
+
                 drawLineFunc(small, big, A.getY(), A.getX(), slope, disp);
             }
             else {
@@ -295,7 +383,7 @@ private:
                 for (int Y = small; Y < big; Y++) {
 
                     if (Y < height && A.getX() < width && Y >= 0 && A.getX() > 0 && rBuffer[int(Y) * (width + 1) + int(A.getX())] == false) {
-                        buffer[int(Y) * (width + 1) + int(A.getX())] = disp;
+                        //buffer[int(Y) * (width + 1) + int(A.getX())] = disp;
                         rBuffer[int(Y) * (width + 1) + int(A.getX())] = true;
                     }
 
@@ -307,40 +395,40 @@ private:
         }
 
     }
-    
-    
-    
-    void drawPoly(polygon p){
-        
-        
-        for(int i = 0; i < p.getNum(); i++){
-            
+
+
+
+    void drawPoly(polygon p) {
+
+
+        for (int i = 0; i < p.getNum(); i++) {
+
             drawLine(p.getLine(i));
         }
-        
+
     }
-    
+
     /*
         void drawPoly_3d(polygon p, camera C){
-            
+
             for(int i = 0; i < p.getNum(); i++){
-                
+
                 drawLine_3d(p.getLine(i), C);
-                
+
             }
-            
+
             for(int i = 0; i < p.getNum(); i++){
-                
+
                 drawLine_3d(p.getLine(i), C);
             }
-            
+
         }
     */
 
     //requires that a-b is the hypotenuse
 
-     
-    
+
+
    /* void fillPoly(polygon p, camera cam) {
 
 
@@ -414,7 +502,7 @@ private:
                             }
                         }
 
-                    
+
                     }
                     ys = longest[2].getY();
                     xs = longest[2].getX();
@@ -454,7 +542,7 @@ private:
 
                             }
                         }
-                    
+
                     }
 
 
@@ -465,11 +553,11 @@ private:
             else {
 
                 // add code for verticals
-        
-        
+
+
             }
 
-        // also 
+        // also
 
         /*
             if (int(dy1) != 0 && int(dy2) != 0) {
@@ -546,9 +634,9 @@ private:
                 }
             }
 
-    
+
     }*/
-    
+
     void drawHalfTriangle(point2d a, point2d b, point2d c, char fill) {
 
 
@@ -569,7 +657,7 @@ private:
             y_s = ys;
             ye = b.getY();
 
-            
+
         }
         else {
             ye = ys;
@@ -601,8 +689,8 @@ private:
                     if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
 
-
-                        buffer[int(y) * (width + 1) + int(x)] = fill;
+                        setPixel(x, y, fill);
+                        //buffer[int(y) * (width + 1) + int(x)] = fill;
                         rBuffer[int(y) * (width + 1) + int(x)] = true;
 
                     }
@@ -624,7 +712,7 @@ private:
             a.drawable() &&
             b.drawable() &&
             c.drawable()
-            
+
 
             )
         {
@@ -641,7 +729,7 @@ private:
 
             //draw bottom half of triangle
             drawHalfTriangle(longest[0], longest[1], longest[2], fill);
-            
+
 
 
             //clear memory
@@ -651,13 +739,13 @@ private:
 
 
 
-            
+
 
         }
 
 
     }
-    
+
     void drawPoly_3d(polygon p, camera C) {
 
         point a(0, 1, -1);
@@ -668,8 +756,8 @@ private:
         if (light > 0.99) {
             disp = '@';
         }
-        else if(light > 0.9) {
-        disp = '#';
+        else if (light > 0.9) {
+            disp = '#';
         }
         else if (light > 0.5) {
             disp = '8';
@@ -685,44 +773,44 @@ private:
             disp = '.';
 
         }
-       
-        for(int i = 0; i < p.getNum(); i++){
-            
+
+        for (int i = 0; i < p.getNum(); i++) {
+
             point vec = p.getPoint(0) - C.getPoint();
             if (normal * vec < 0.0) {
 
-                drawLine_3d(p.getLine(i), C);
+               // drawLine_3d(p.getLine(i), C);
                 fillPoly(p, C, disp);
-                
+
             }
 
-            
+
         }
 
-         
-        
+
+
     }
-    
-    void drawModel(model m, camera C){
-        
-        for(int i = 0; i < m.getFaceNum(); i++){
+
+    void drawModel(model m, camera C) {
+
+        for (int i = 0; i < m.getFaceNum(); i++) {
             drawPoly_3d(m.getFace(i), C);
         }
-        
+
     }
 
     void addModelToRenderStack(model m) {
-    
+
         for (int i = 0; i < m.getFaceNum(); i++) {
             renderStack.push_back(m.getFace(i));
         }
     }
     void drawRenderStack(camera C) {
-    
+
         refCam = C.getPoint();
         std::sort(renderStack.begin(), renderStack.end(), sortByZaxis);
         for (int i = 0; i < renderStack.size(); i++) {
-            
+
             drawPoly_3d(renderStack[i], C);
 
         }
@@ -731,5 +819,5 @@ private:
     }
 
 
-    
+
 };
