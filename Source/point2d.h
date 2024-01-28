@@ -39,9 +39,8 @@ public:
 
         float z = pT.getZ();
 
-        if (z > 0) {
+        if (z > 0 ) {
 
-            canDraw = true;
 
 
             //create ratio value
@@ -51,6 +50,7 @@ public:
             x = pT.getX() * ratio / z;
             y = pT.getY() / z;
 
+
             x += 1.0;
             y += 1.0;
 
@@ -59,7 +59,18 @@ public:
             y *= 0.5 * bufferHeight * ys;
 
 
-           
+            if (y >= 0 && x >= 0 && y < bufferHeight && x < bufferWidth) {
+
+                canDraw = true;
+                
+
+            }
+            else {
+
+                canDraw = false;
+                x = 0;
+                y = 0;
+            }
         
         }
         else {

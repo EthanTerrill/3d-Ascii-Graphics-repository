@@ -1,10 +1,22 @@
 #ifndef __console_3d_lib__
     #define __console_3d_lib__
+
+    #include <iostream>
+    #include <time.h>
+    #include <thread>
+    #include <math.h>
+    #include <float.h>
+
+    #include <io.h>
+   // #include <fcntl.h>
+    #include <windows.h>
+    #include <cwchar> 
+
     #include <vector>
     #include <fstream>
     #include <algorithm>
     
-    
+#undef small
     
     #include "point.h"
    // #include "physical.h"
@@ -38,6 +50,6 @@
     #include "model.h"
     
 
-    #include "frame.h" 
+    //#include "frame.h" 
     #include "colorFrame.h" 
 #endif

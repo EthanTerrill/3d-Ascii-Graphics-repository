@@ -13,14 +13,15 @@ private:
 
     std::vector<polygon> renderStack;
 
-    void drawLineFunc(float small, float big, float ty, float tx, float m, char c) {
+    void drawLineFunc(float smal, float big, float ty, float tx, float m, char c) {
 
-        for (float x = small; x < big; x++) {
+        for (float x = smal; x < big; x++) {
 
             float h = ty + (m * (x - tx));
 
             if (h < height && x < width && x > 0 && h > 0 && rBuffer[int(h) * (width + 1) + int(x)] == false) {
 
+                setPixel(x, h, c);
                 rBuffer[int(h) * (width + 1) + int(x)] = true;
 
             }
@@ -134,6 +135,7 @@ public:
     inline void setPixel(int x, int y, char c) {
 
         buffer[y * (width * 12 + 1) + x * 12 + 11] = c;
+
     }
     inline void setPixelColor(int x, int y, char a, char b, char c) {
 
@@ -239,92 +241,9 @@ public:
     }
 
 
-    void drawLine_3d(line L, camera cam) {
+   
 
-
-
-
-        point2d A(L.getA(), cam.getPoint(), width, height);
-        point2d B(L.getB(), cam.getPoint(), width, height);
-
-        double zTranslatedA = (L.getA().getZ() - cam.getZ());
-        double zTranslatedB = L.getB().getZ() - cam.getZ();
-
-        float rat = float(width) / float(height);
-
-        if (zTranslatedA > 0 && zTranslatedB > 0 && A.drawable() && B.drawable()) {
-
-
-
-
-            int h = A.getY();
-            int x = A.getX();
-
-
-
-            if (!(int(A.getX()) == int(B.getX()))) {
-
-                double slope = (A.getY() - B.getY()) / (A.getX() - B.getX());
-
-                float small;
-                small = (A.getX() < B.getX()) * A.getX();
-                small = (A.getX() >= B.getX()) * B.getX() + small;
-
-
-                float big;
-                big = (A.getX() > B.getX()) * A.getX();
-                big = (A.getX() <= B.getX()) * B.getX() + big;
-
-
-
-                if (slope <= -0.5) {
-
-                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '/');
-                }
-                else if (slope >= -0.5 && slope <= 0.5) {
-
-                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '-');
-
-                }
-                else if (slope >= 0.5) {
-
-                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '\\');
-
-                }
-                else {
-                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '|');
-
-                }
-            }
-            else {
-
-
-                float small;
-                small = (A.getY() < B.getY()) * A.getY();
-                small = (A.getY() >= B.getY()) * B.getY() + small;
-
-
-                float big;
-                big = (A.getY() > B.getY()) * A.getY();
-                big = (A.getY() <= B.getY()) * B.getY() + big;
-
-
-                for (int Y = small; Y < big; Y++) {
-
-                    if (Y < height && A.getX() < width && Y >= 0 && A.getX() > 0 && rBuffer[int(Y) * (width + 1) + int(A.getX())] == false) {
-                        //buffer[int(Y) * (width + 1) + int(A.getX()) * 13] = '|';
-                        rBuffer[int(Y) * (width + 1) + int(A.getX())] = true;
-                    }
-
-                }
-
-            }
-
-
-        }
-
-    }
-
+    /*
     void drawLine_3d(line L, camera cam, char disp) {
 
 
@@ -665,7 +584,12 @@ public:
 
         }
 
-        if (int(dy1) != 0 && int(dy2) != 0) {
+
+        if (int(dy1) != 0 && int(dy2) != 0 && 
+            
+            a.drawable() &&
+            b.drawable() &&
+            c.drawable()) {
 
 
             float m1, m2;
@@ -686,11 +610,15 @@ public:
                     xf = t;
                 }
                 for (int x = xi; x < xf; x++) {
+
+
+
                     if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
 
                         setPixel(x, y, fill);
                         //buffer[int(y) * (width + 1) + int(x)] = fill;
+
                         rBuffer[int(y) * (width + 1) + int(x)] = true;
 
                     }
@@ -708,10 +636,12 @@ public:
         point2d b(p.getLine(1).getA(), cam.getPoint(), width, height);
         point2d c(p.getLine(2).getA(), cam.getPoint(), width, height);
 
+
+
         if (
             a.drawable() &&
             b.drawable() &&
-            c.drawable()
+            c.drawable() 
 
 
             )
@@ -745,6 +675,92 @@ public:
 
 
     }
+    void drawLine_3d(line L, camera cam) {
+
+
+
+
+        point2d A(L.getA(), cam.getPoint(), width, height);
+        point2d B(L.getB(), cam.getPoint(), width, height);
+
+        double zTranslatedA = (L.getA().getZ() - cam.getZ());
+        double zTranslatedB = L.getB().getZ() - cam.getZ();
+
+        float rat = float(width) / float(height);
+
+        if (A.drawable() && B.drawable()) {
+
+
+
+
+            int h = A.getY();
+            int x = A.getX();
+
+
+
+            if (!(int(A.getX()) == int(B.getX()))) {
+
+                double slope = (A.getY() - B.getY()) / (A.getX() - B.getX());
+
+                float small;
+                small = (A.getX() < B.getX()) * A.getX();
+                small = (A.getX() >= B.getX()) * B.getX() + small;
+
+
+                float big;
+                big = (A.getX() > B.getX()) * A.getX();
+                big = (A.getX() <= B.getX()) * B.getX() + big;
+
+
+
+                if (slope <= -0.5) {
+
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '/');
+                }
+                else if (slope >= -0.5 && slope <= 0.5) {
+
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '-');
+
+                }
+                else if (slope >= 0.5) {
+
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '\\');
+
+                }
+                else {
+                    drawLineFunc(small, big, A.getY(), A.getX(), slope, '|');
+
+                }
+            }
+            else {
+
+
+                float small;
+                small = (A.getY() < B.getY()) * A.getY();
+                small = (A.getY() >= B.getY()) * B.getY() + small;
+
+
+                float big;
+                big = (A.getY() > B.getY()) * A.getY();
+                big = (A.getY() <= B.getY()) * B.getY() + big;
+
+
+                for (int Y = small; Y < big; Y++) {
+
+                    if (Y < height && A.getX() < width && Y >= 0 && A.getX() > 0 && rBuffer[int(Y) * (width + 1) + int(A.getX())] == false) {
+                        //buffer[int(Y) * (width + 1) + int(A.getX()) * 13] = '|';
+                        rBuffer[int(Y) * (width + 1) + int(A.getX())] = true;
+                    }
+
+                }
+
+            }
+
+
+        }
+
+    }
+
 
     void drawPoly_3d(polygon p, camera C) {
 
@@ -779,13 +795,23 @@ public:
             point vec = p.getPoint(0) - C.getPoint();
             if (normal * vec < 0.0) {
 
-               // drawLine_3d(p.getLine(i), C);
-                fillPoly(p, C, disp);
+                drawLine_3d(p.getLine(i), C);
+                
 
             }
 
+        }
+
+        point vec = p.getPoint(0) - C.getPoint();
+        if (normal * vec < 0.0) {
+
+
+
+            fillPoly(p, C, disp);
+
 
         }
+
 
 
 
