@@ -19,18 +19,29 @@
 #undef small
     
     #include "point.h"
-
     #include "timer.h" 
     #include "line.h"
-
-
     #include "polygon.h"
     #include "camera.h" 
-    
-
     #include "point2d.h"
-    
-    point refCam(0,0,0);
+    #include "model.h"
+    #include "colorFrame.h" 
+
+    bool sortByZaxis(polygon a, polygon b);
+
+
+    point refCam(0, 0, 0);
+
+
+    #include "point.cpp"
+    #include "line.cpp"
+    #include "ColorFrame.cpp"
+    #include "point2d.cpp"
+    #include "polygon.cpp"
+    #include "camera.cpp"
+    #include "model.cpp"
+
+
     bool sortByZaxis(polygon a, polygon b)
     {
         point A1 = (a.getLine(0).getA() - refCam);
@@ -41,14 +52,8 @@
 
         point A3 = (a.getLine(2).getA() - refCam);
         point B3 = (b.getLine(2).getA() - refCam);
-        return (A1.getZ() + A2.getZ()  + A3.getZ() < B1.getZ() + B2.getZ() + B3.getZ());
+        return (A1.getZ() + A2.getZ() + A3.getZ() < B1.getZ() + B2.getZ() + B3.getZ());
     }
-    
-    #include "model.h"
-    
 
-    //#include "frame.h" 
-    #include "colorFrame.h" 
-    #include "ColorFrame.cpp"
-    #include "camera.cpp"
+
 #endif

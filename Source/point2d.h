@@ -9,228 +9,46 @@ private:
     double y;
     bool canDraw;
 
-
-
-
 public:
-    point2d() {
+    point2d();
 
-        x = 0;
-        y = 0; 
+    point2d(int x, int y);
 
-        type = '_';
-        canDraw = true;
-    };
+    point2d(point p, camera camera, int bufferWidth, int bufferHeight);
 
-    point2d(int x, int y) {
+    bool drawable();
 
-        this->x = x;
-        this->y = y; 
+    void setX(double x);
 
-        type = '_';
-        canDraw = true;
+    void setY(double y);
 
-    };
+    void setType(char newType);
 
-    point2d(point p, camera camera, int bufferWidth, int bufferHeight) {
-        
+    double getX();
 
-        point pT = p - camera.getPoint();
+    double getY();
 
-        pT.rotate(camera.getPoint(), camera.getThetaX(), camera.getThetaY(), camera.getThetaZ());
+    char getType();
 
+    void move(int x, int y, int z);
 
-        float z = pT.getZ();
+    double getDistanceFrom(point other);
 
+    float getMagnitude();
 
+    void normalize();
 
-        if (z > 0 ) {
+    void subtr(point2d a, point2d b);
 
+    point2d& operator=(point other);
 
+    point2d& operator+(point2d other);
 
-            //create ratio value
+    point2d operator-(point2d other);
 
-            float ratio = 1;// float(bufferWidth) / float(bufferHeight);
+    float operator*(point other);
 
-            x = pT.getX() * ratio / z;
-            y = pT.getY() / z;
-
-
-            x += 1.0;
-            y += 1.0;
-
-
-            x *= 0.5 * bufferWidth;
-            y *= 0.5 * bufferHeight * ys;
-
-
-            if (y >= 0 && x >= 0 && y < bufferHeight && x < bufferWidth) {
-
-                canDraw = true;
-                
-
-            }
-            else {
-
-                canDraw = false;
-                x = 0;
-                y = 0;
-            }
-        
-        }
-        else {
-
-            canDraw = false;
-            x = 0;
-            y = 0;
-        }
-         
-    };
-
-    bool drawable() {
-    
-        return canDraw;
-    }
-    //setter functions
-
-    void setX(double x) {
-
-        this->x = x;
-
-
-    }
-
-    void setY(double y) {
-
-        this->y = y;
-
-    }
-     
-
-    void setType(char newType) {
-
-        this->type = newType;
-    }
-    //getter functions
-
-    double getX() {
-
-        return x;
-
-
-    }
-
-    double getY() {
-
-        return y;
-
-    }
-     
-
-    char getType() {
-
-        return type;
-    }
-
-    void move(int x, int y, int z) {
-
-        this->x += x;
-        this->y += y; 
-
-    }
-
-
-    double getDistanceFrom(point other) {
-
-        double nx = x - other.getX();
-        double ny = y - other.getY();
-
-        return sqrt(nx * nx + ny * ny);
-
-
-
-
-    }
-
-    
-
-
-    float getMagnitude() {
-
-
-        return sqrt(x * x + y * y);
-
-    }
-    void normalize() {
-
-
-        float mag = getMagnitude();
-
-        if (mag != 0) {
-
-            x /= mag;
-            y /= mag; 
-
-
-        }
-
-
-    }
-    void subtr(point2d a, point2d b) {
-
-        point ret;
-
-        this->x = a.getX() - b.getX();
-        this->y = a.getY() - b.getY(); 
-
-    }
-
-    //function overloads
-
-
-    point2d& operator=(point other) {
-
-        this->x = other.getX();
-        this->y = other.getY(); 
-
-        return *this;
-
-    }
-
-    point2d& operator+(point2d other) {
-
-        point2d ret(this->x + other.getX(), this->y + other.getY());
-
-        return ret;
-
-    }
-
-    point2d operator-(point2d other) {
-
-        point2d ret = point2d(this->x - other.getX(), this->y - other.getY());
-
-        return ret;
-
-    }
-
-    float operator*(point other) {
-
-        float ret = this->x * other.getX() + this->y * other.getY();
-
-        return ret;
-
-    }
-
-    float cross(point other) {
-
-        float ret = this->x * other.getY() - this->y * other.getX(); 
-
-
-        return ret;
-    }
-
-
-
+    float cross(point other);
 };
 
 

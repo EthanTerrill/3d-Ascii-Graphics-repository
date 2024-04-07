@@ -1,0 +1,5 @@
+TODO:
+	-Fix clipping
+	-implement textures
+	-fix model loading
+	- 

@@ -6,87 +6,23 @@ class line{
     double slope;
     bool vert;
     public:
-    line(point A, point B){
-        
-        this->A = A;
-        this->B = B;
-        
-        vert = (A.getX() == B.getX());
-        
-        if (!vert) {
-            slope = (double(A.getY() - B.getY()) / double(A.getX() - B.getX()));
-        }
-        
-        slope = slope * (!vert);
-        
-    }
+    line(point A, point B);
     
-    line(int x1, int y1, int x2, int y2){
-        
-        
-    }
+    line(int x1, int y1, int x2, int y2);
     
-    void setA(point A){
-        
-        this->A = A;
-        
-        vert = (A.getX() == B.getX());
-        
-        slope = ( double(A.getY() - B.getY())/double(A.getX() - B.getX()) );
-        
-        slope = slope * (!vert);
-    }
+    void setA(point A);
     
-    void setB(point B){
-        
-        this->B = B;
-        
-        vert = (A.getX() == B.getX());
-        
-        slope = ( double(A.getY() - B.getY())/double(A.getX() - B.getX()) );
-        
-        slope = slope * (!vert);
-        
-    }
+    void setB(point B);
     
-    point getA(){
-        
-        return A;
-    }
+    point getA();
     
-    point getB(){
-        
-        return B;
-    }
+    point getB();
     
-    int getLength(){
-        
-        int a = (A.getX() - B.getX());
-        int b = (A.getY() - B.getY());
-        
-        int c = sqrt(a * a  + b * b);
-        
-        return c;
-    }
-    double getSlope(){
-        
-        return slope;
-    }
+    int getLength();
+    double getSlope();
     
-    bool isVertical(){
-        
-        return vert;
-    }
-    void move(int x, int y, int z){
-        
-        A.move(x, y, z);
-        B.move(x, y, z);
-        
-    }
-    void rotate(point p, double tx, double ty, double tz){
-        
-        A.rotate(p, tx, ty, tz);
-        B.rotate(p, tx, ty, tz);
-    }
+    bool isVertical();
+    void move(int x, int y, int z);
+    void rotate(point p, double tx, double ty, double tz);
     
 };
