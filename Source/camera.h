@@ -1,3 +1,4 @@
+#pragma once
 class camera{
     private:
     point p;
@@ -8,90 +9,37 @@ class camera{
     double fov;
     public:
     
-    camera(){
-        
-        
-        this->p = *new point(0, 0, 0);
-        
-        thetaX = 0;
-        thetaY = 0;
-        thetaZ = 0;
-        
-        fov = 90;
-        
-    }
+    camera();
     
-    camera(point p){
-        
-        this->p = p;
-        
-        thetaX = 0;
-        thetaY = 0;
-        thetaZ = 0;
-        
-        fov = 90;
-        
-        
-    }
+    camera(point p);
     
-    camera(point p, int fov){
-        
-        this->p = p;
-        
-        
-        thetaX = 0;
-        thetaY = 0;
-        thetaZ = 0;
-        
-        fov = 90;
-    }
-    
-    
-    void setFov(int fov){
-        
-        this->fov = fov;
-        
-    }
-    
-    void moveX(double dx){
-        
-        p.setX(p.getX() + dx);
-        
-    }
-    
-    void moveY(double dy){
-        
-        p.setY(p.getY() + dy);
-        
-    }
-    
-    void moveZ(double dz){
-        
-        p.setZ(p.getZ() + dz);
-        
-    }
-    
-    double getX(){
-        
-        return p.getX();
-    }
-    
-    double getY(){
-        
-        return p.getY();
-    }
-    
-    double getZ(){
-        
-        return p.getZ();
-    }
-    double getFOV(){
-        
-        return fov;
-    }
+    camera(point p, int fov);
 
-    point getPoint() {
+    void move(point p);
     
-        return p;
-    }
+    void rotate(float thetaX, float thetaY, float thetaZ);
+
+    void setFov(int fov);
+    
+    void moveX(double dx);
+    
+    void moveY(double dy);
+    
+    void moveZ(double dz);
+    
+    double getX();
+    
+    double getY();
+    
+    double getZ();
+
+    double getThetaX();
+
+    double getThetaY();
+
+    double getThetaZ();
+
+    double getFOV();
+
+    point getPoint();
 };

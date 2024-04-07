@@ -8,7 +8,7 @@
     #include <float.h>
 
     #include <io.h>
-   // #include <fcntl.h>
+
     #include <windows.h>
     #include <cwchar> 
 
@@ -19,17 +19,14 @@
 #undef small
     
     #include "point.h"
-   // #include "physical.h"
-   // #include "TheLiteralVoidThatBindsTheUniverseTogether.h"
-    //TheLiteralVoidThatBindsTheUniverseTogether TheLiteralVoid;
-    
-   // #include "circle.h"
+
     #include "timer.h" 
     #include "line.h"
 
 
     #include "polygon.h"
     #include "camera.h" 
+    
 
     #include "point2d.h"
     
@@ -52,4 +49,6 @@
 
     //#include "frame.h" 
     #include "colorFrame.h" 
+    #include "ColorFrame.cpp"
+    #include "camera.cpp"
 #endif

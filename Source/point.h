@@ -214,6 +214,14 @@ class point{
 
     }
 
+    point operator*(float f) {
+
+        point ret = point(this->x *f, this->y * f, this->z * f);
+
+        return ret;
+
+    }
+
     float operator*(point other) {
 
         float ret = this->x * other.getX() + this->y * other.getY() + this->z * other.getZ();

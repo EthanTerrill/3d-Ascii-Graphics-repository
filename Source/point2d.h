@@ -32,12 +32,17 @@ public:
 
     };
 
-    point2d(point p, point camera, int bufferWidth, int bufferHeight) {
+    point2d(point p, camera camera, int bufferWidth, int bufferHeight) {
         
 
-        point pT = p - camera;
+        point pT = p - camera.getPoint();
+
+        pT.rotate(camera.getPoint(), camera.getThetaX(), camera.getThetaY(), camera.getThetaZ());
+
 
         float z = pT.getZ();
+
+
 
         if (z > 0 ) {
 

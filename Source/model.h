@@ -185,6 +185,16 @@ class model{
         }
         
     }
+
+    void move(point p) {
+
+        for (int i = 0; i < triangles.size(); i++) {
+
+            triangles[i].move(p.getX(), p.getY(), p.getZ());
+
+        }
+
+    }
     
     
 };
