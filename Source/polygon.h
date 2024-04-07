@@ -1,6 +1,9 @@
 class polygon {
 
 private:
+    color shapeColor;
+    color edgeColor;
+
 
     int pointNum;
     line* l;
@@ -30,6 +33,10 @@ private:
 
     point getPoint(int n);
 
-
     point getNormal();
+
+    color getColor();
+
+    color getEdgeColor();
+
 };

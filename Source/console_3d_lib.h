@@ -15,9 +15,13 @@
     #include <vector>
     #include <fstream>
     #include <algorithm>
+
+
+    #include <cassert>
     
 #undef small
     
+    #include "color.h"
     #include "point.h"
     #include "timer.h" 
     #include "line.h"
@@ -26,20 +30,24 @@
     #include "point2d.h"
     #include "model.h"
     #include "colorFrame.h" 
+    
 
     bool sortByZaxis(polygon a, polygon b);
 
 
     point refCam(0, 0, 0);
 
+    #include "buffer.cpp"
+    #include "image.cpp"
 
+    #include "color.cpp"
     #include "point.cpp"
     #include "line.cpp"
-    #include "ColorFrame.cpp"
-    #include "point2d.cpp"
     #include "polygon.cpp"
     #include "camera.cpp"
+    #include "point2d.cpp"
     #include "model.cpp"
+    #include "ColorFrame.cpp"
 
 
     bool sortByZaxis(polygon a, polygon b)

@@ -3,6 +3,8 @@ model::model(std::string fileName) {
 
     std::ifstream f;
     f.open(fileName);
+    
+
 
     char c = 0;
     point* myPoints = (point*)std::malloc(sizeof(point) * 3);
@@ -68,6 +70,8 @@ model::model(std::string fileName) {
         }
 
     }
+
+    this->c = color(0, 0, 0);
 
 }
 
@@ -140,6 +144,8 @@ model::model(std::string fileName, float scaleFactor) {
         }
 
     }
+
+    this->c = color(0, 0, 0);
 
 }
 

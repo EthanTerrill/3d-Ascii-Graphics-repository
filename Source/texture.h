@@ -1,0 +1,10 @@
+class texture {
+private:
+
+
+public:
+
+
+
+
+};

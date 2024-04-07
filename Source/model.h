@@ -1,7 +1,9 @@
 class model{
+
     
     private:
-    
+
+    color c;
     std::vector<polygon> triangles;
     std::vector<point>      points;
     

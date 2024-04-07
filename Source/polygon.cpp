@@ -30,6 +30,9 @@ polygon::polygon(int pointNum, point* points) {
 
 
     updateNormal();
+
+    shapeColor = color(0, 0, rand() % 10);
+    edgeColor  = color(0, 0, rand() % 10);
 }
 
 line polygon::getLine(int n) {
@@ -40,6 +43,8 @@ point polygon::getPoint(int n) {
 
     return points[n];
 }
+
+
 
 int polygon::getNum() {
 
@@ -87,4 +92,13 @@ point polygon::getNormal() {
 
     return normalVec;
 
+}
+
+color polygon::getColor() {
+
+    return shapeColor;
+}
+color polygon::getEdgeColor() {
+
+    return edgeColor;
 }
