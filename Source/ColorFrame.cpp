@@ -1,10 +1,12 @@
 
 
 //class constructor 
-colorFrame::colorFrame(unsigned int width, unsigned int height) {
+colorFrame::colorFrame(unsigned int width, unsigned int height, sf::RenderWindow* window) {
 
     this->width = width;
     this->height = height;
+    this->window = window;
+
     std::cout << "1";
 
 
@@ -13,39 +15,37 @@ colorFrame::colorFrame(unsigned int width, unsigned int height) {
     ///////////////////////////////////////////
 
 
+    int posX = 0;
+    int posY = 0;
 
-    buffer = new char[(width * 12 + 1) * height];
-    for (int y = 0; y < (width * 12 + 1) * height; y++) {
+    int rWidth = scrnwidth / pixelNum;
+    int rHeight = scrnheight / pixelNum;
+
+    int rdx = 0;
+
+    int rdy = 0;
+    rects = new sf::RectangleShape[width * height];
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
 
 
+            int i = y * width + x;
 
-        buffer[y] = ' ';
+            rects[i] = sf::RectangleShape(sf::Vector2f(rWidth, rHeight));
+            rects[i].move((rWidth + rdx) * x, (rHeight + rdy) * y + 10);
+            
 
+            float t = rand() % 255;
+            float w = 0.7f;
+            rects[y * width + x].setFillColor(sf::Color((sf::Uint8)(w * t), sf::Uint8(t * w), sf::Uint8(w * t)));
 
-    }
-
-    std::cout << "3";
-
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-
-            char color[12] = "\033[38;5;001m";
-
-            for (int i = 0; i < 11; i++) {
-
-                buffer[y * (width * 12 + 1) + x * 12 + i] = color[i];
-
-                char col = (rand() % 10) + 48;
-
-                setPixelColor(x, y, '0', '0', col);
-            }
-
-            buffer[y * (width * 12 + 1) + x * 12 + 11] = '2';
 
 
         }
-        buffer[y * (width * 12 + 1) + width * 12] = '\n';
+
     }
+
+
 
 
     std::cout << "4";
@@ -74,24 +74,86 @@ colorFrame::colorFrame(unsigned int width, unsigned int height) {
 }
 
 
+void colorFrame::resize() {
+    if (pixelNum <=0) {
+        pixelNum = 1;
+    }
+    //else if()
+
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
+
+
+            int i = y * width + x;
+            
+
+        }
+
+    }
+
+    this->width     = pixelNum;
+    this->height    = pixelNum;
+
+    int posX = 0;
+    int posY = 0;
+
+    int rWidth = scrnwidth / pixelNum;
+    int rHeight = scrnheight / pixelNum;
+
+    int rdx = 0;
+
+    int rdy = 0;
+    rects = new sf::RectangleShape[width * height];
+    std::cout << pixelNum << "\n";
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
+
+
+            int i = y * width + x;
+
+            rects[i] = sf::RectangleShape(sf::Vector2f(rWidth, rHeight));
+            rects[i].move((rWidth + rdx) * x, (rHeight + rdy) * y + 10);
+            float t = rand() % 255;
+            float w = 0.7f;
+            rects[y * width + x].setFillColor(sf::Color((sf::Uint8)(w * t), sf::Uint8(t * w), sf::Uint8(w * t)));
+
+        }
+
+    }
+
+    clear();
+}
+
 inline void colorFrame::setPixel(int x, int y, char c) {
 
-    buffer[y * (width * 12 + 1) + x * 12 + 11] = c;
+    //buffer[y * (width * 12 + 1) + x * 12 + 11] = c;
+    int r = rand() % 200;
+    int g = rand() % 200;
+    int b = rand() % 200;
+    //rects[y * (width ) + x ].setFillColor(sf::Color(r, g, b));
 
 }
-inline void colorFrame::setPixelColor(int x, int y, char a, char b, char c) {
+inline void colorFrame::setPixelColor(int x, int y, char r, char g, char b) {
 
-    buffer[y * (width * 12 + 1) + x * 12 + 11 - 4] = a;
-    buffer[y * (width * 12 + 1) + x * 12 + 11 - 3] = b;
-    buffer[y * (width * 12 + 1) + x * 12 + 11 - 2] = c;
+    r = rand() % 200;
+    g = rand() % 200;
+    b = rand() % 200;
+
+    rects[y * (width)+x].setFillColor(sf::Color(r, g, b));
 }
 
 
-inline void colorFrame::setPixelColor(int x, int y, color col) {
+inline void colorFrame::setPixelColor(int x, int y, color col, float light) {
 
-    buffer[y * (width * 12 + 1) + x * 12 + 11 - 4] = col.getA() + 48;
-    buffer[y * (width * 12 + 1) + x * 12 + 11 - 3] = col.getB() + 48;
-    buffer[y * (width * 12 + 1) + x * 12 + 11 - 2] = col.getC() + 48;
+
+    sf::Uint8 r = (sf::Uint8)(col.getA() * light);
+    sf::Uint8 g = (sf::Uint8)(col.getB() * light);
+    sf::Uint8 b = (sf::Uint8)(col.getC() * light);
+
+
+    rects[y * (width)+x].setFillColor(sf::Color(r,g,b));
+
+ 
 }
 
 
@@ -110,7 +172,7 @@ void colorFrame::drawLineFunc(float small, float big, float ty, float tx, float 
     }
 
 }
-void colorFrame::drawLineFunc(float small, float big, float ty, float tx, float m, char c, color col) {
+void colorFrame::drawLineFunc(float small, float big, float ty, float tx, float m, float light , color col) {
 
     for (float x = small; x < big; x++) {
 
@@ -118,8 +180,8 @@ void colorFrame::drawLineFunc(float small, float big, float ty, float tx, float 
 
         if (h < height && x < width && x > 0 && h > 0 && rBuffer[int(h) * (width + 1) + int(x)] == false) {
 
-            setPixelColor(x, h, col);
-            setPixel(x, h, c);
+            setPixelColor(x, h, col, 1);
+            //setPixel(x, h, c);
             rBuffer[int(h) * (width + 1) + int(x)] = true;
 
         }
@@ -131,23 +193,16 @@ void colorFrame::setBufferColorsRandom() {
 
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
+                //buffer[y * (width * 12 + 1) + x * 12 + i] = color[i];
 
-            char color[12] = "\033[38;5;001m";
+                char col = (rand() % 255) + 48;
 
-            for (int i = 0; i < 11; i++) {
-
-                buffer[y * (width * 12 + 1) + x * 12 + i] = color[i];
-
-                char col = (rand() % 10) + 48;
-
-                setPixelColor(x, y, '0', '0', col);
-            }
-
+                setPixelColor(x, y, rand() % 255, rand() % 255, col);
            
 
 
         }
-        buffer[y * (width * 12 + 1) + width * 12] = '\n';
+        
     }
 
 }
@@ -158,7 +213,17 @@ void colorFrame::show() {
     
     isPrinting = true;
     //display buffer
-    printf("%s", buffer);
+    //printf("%s", buffer);
+
+
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
+
+            window[0].draw(rects[y * width + x]);
+        }
+
+    }
+
 
     //reset cursor to 0
     printf("\033[0;0H");
@@ -185,9 +250,15 @@ void colorFrame::clear() {
         }
     }
 
+
+    for (int i = 0; i < width * height; i++) {
+        
+        rects[i].setFillColor( sf::Color(0, 0, 0) );
+    }
+
 }
 
-void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, char fill) {
+void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, float fill) {
 
 
 
@@ -280,7 +351,7 @@ void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, char fill) {
     }
 
 }
-void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, char fill, color col) {
+void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, float light, color col) {
 
 
 
@@ -360,8 +431,8 @@ void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, char fill, co
 
                 if (y < height && x < width && x > 0 && y > 0 && rBuffer[int(y) * (width + 1) + int(x)] == false) {
 
-                    setPixelColor(x, y, col);
-                    setPixel(x, y, fill);
+                    setPixelColor(x, y, col, light);
+                    setPixel(x, y, light);
 
                     rBuffer[int(y) * (width + 1) + int(x)] = true;
 
@@ -374,7 +445,7 @@ void colorFrame::drawHalfTriangle(point2d a, point2d b, point2d c, char fill, co
 
 }
 
-void colorFrame::fillPoly(polygon p, camera cam, char fill) {
+void colorFrame::fillPoly(polygon p, camera cam, float light) {
 
     //convert to 2d
     point2d a(p.getLine(0).getA(), cam, width, height);
@@ -400,10 +471,10 @@ void colorFrame::fillPoly(polygon p, camera cam, char fill) {
 
 
         //draw top half of triangle
-        drawHalfTriangle(longest[2], longest[1], longest[0], fill, p.getColor());
+        drawHalfTriangle(longest[2], longest[1], longest[0], light, p.getColor());
 
         //draw bottom half of triangle
-        drawHalfTriangle(longest[0], longest[1], longest[2], fill, p.getColor());
+        drawHalfTriangle(longest[0], longest[1], longest[2], light, p.getColor());
 
 
 
@@ -498,7 +569,7 @@ void colorFrame::drawLine_3d(line L, camera cam) {
 
 }
 
-void colorFrame::drawLine_3d(line L, camera cam, color col) {
+void colorFrame::drawLine_3d(line L, camera cam, color col, float light) {
 
 
 
@@ -566,7 +637,7 @@ void colorFrame::drawLine_3d(line L, camera cam, color col) {
             }
 
             
-            drawLineFunc(small, big, Ay, Ax, slope, c, col);
+            drawLineFunc(small, big, Ay, Ax, slope, light, col);
         }
 
 
@@ -574,6 +645,7 @@ void colorFrame::drawLine_3d(line L, camera cam, color col) {
     }
 
 }
+
 char colorFrame::getLightLevel(float light) {
 
     if (light > 0.99) {
@@ -614,35 +686,48 @@ void colorFrame::drawPoly_3d(polygon p, camera C) {
     // gives amount of surface perpendicular to light i.e.
     // how bright surface should be
 
-    float light = normal * lightRay;
+    float light = normal * point(1,1,1);//* lightRay;
 
 
     //get the character for associate birghtness
-    char disp = getLightLevel(light);
+    //char disp = getLightLevel(light);
     
 
     for (int i = 0; i < p.getNum(); i++) {
 
-        point vec = p.getPoint(0) - C.getPoint();
-
-        if (normal * vec < 0.0) {
-
-           // drawLine_3d(p.getLine(i), C, p.getEdgeColor());
-
-
-        }
-
-    }
-
-    point vec = p.getPoint(0) - C.getPoint();
-    if (normal * vec < 0.0) {
+      //  point vec = p.getPoint(0) - C.getPoint();
 
 
 
-        fillPoly(p, C, disp);
 
+
+
+        //if (normal * vec < 0.0) {
+
+        drawLine_3d(p.getLine(i), C, p.getEdgeColor(), light);
+
+
+        //}
 
     }
+
+
+    /*
+    point vec1 = p.getPoint(0) - C.getPoint();
+    point vec2 = p.getPoint(1) - C.getPoint();
+    point vec3 = p.getPoint(2) - C.getPoint();
+
+    */
+
+
+    // add optimization later, pain in the ass rn
+    
+    //if (normal * vec1 < 0.0 || normal * vec2 < 0.0 || normal * vec3 < 0.0) {
+
+    fillPoly(p, C, light);
+
+
+    //}
 
 
 
@@ -663,9 +748,16 @@ void colorFrame::addModelToRenderStack(model m) {
         renderStack.push_back(m.getFace(i));
     }
 }
+
 void colorFrame::drawRenderStack(camera C) {
 
-    refCam = C.getPoint();
+
+    for (int i = 0; i < renderStack.size(); i++) {
+
+        renderStack[i].updateTpoints(C);
+
+    }
+
     std::sort(renderStack.begin(), renderStack.end(), sortByZaxis);
     for (int i = 0; i < renderStack.size(); i++) {
 
@@ -675,6 +767,9 @@ void colorFrame::drawRenderStack(camera C) {
 
 
 }
+
+
+
 
 
 boolean colorFrame::printing() {

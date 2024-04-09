@@ -25,8 +25,8 @@
     #include "point.h"
     #include "timer.h" 
     #include "line.h"
-    #include "polygon.h"
     #include "camera.h" 
+    #include "polygon.h"
     #include "point2d.h"
     #include "model.h"
     #include "colorFrame.h" 
@@ -35,7 +35,11 @@
     bool sortByZaxis(polygon a, polygon b);
 
 
+    point origin = point(0, 0, 0);
     point refCam(0, 0, 0);
+    float tX = 0;
+    float tY = 0;
+    float tZ = 0;
 
     #include "buffer.cpp"
     #include "image.cpp"
@@ -52,15 +56,8 @@
 
     bool sortByZaxis(polygon a, polygon b)
     {
-        point A1 = (a.getLine(0).getA() - refCam);
-        point B1 = (b.getLine(0).getA() - refCam);
 
-        point A2 = (a.getLine(1).getA() - refCam);
-        point B2 = (b.getLine(1).getA() - refCam);
-
-        point A3 = (a.getLine(2).getA() - refCam);
-        point B3 = (b.getLine(2).getA() - refCam);
-        return (A1.getZ() + A2.getZ() + A3.getZ() < B1.getZ() + B2.getZ() + B3.getZ());
+        return (a.getTPoint(0).getZ() + a.getTPoint(1).getZ() + a.getTPoint(2).getZ() < b.getTPoint(0).getZ() + b.getTPoint(1).getZ() + b.getTPoint(2).getZ());
     }
 
 

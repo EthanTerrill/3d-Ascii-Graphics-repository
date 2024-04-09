@@ -58,8 +58,8 @@ point2d::point2d(point p, camera camera, int bufferWidth, int bufferHeight) {
         else {
 
             canDraw = false;
-            x = 0;
-            y = 0;
+            //x = 0;
+            //y = 0;
         }
 
     }
